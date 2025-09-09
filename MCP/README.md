@@ -1,20 +1,21 @@
 # Model Context Protocol (MCP) Server
 
 ## 📚 Table of Contents
-- [Why Do We Need MCP Servers?](#-why-do-we-need-mcp-servers)
-- [What is MCP Server?](#-what-is-mcp-server)
-- [Prerequisites](#-prerequisites)
-- [Getting Started](#-getting-started)
-- [How MCP Works](#-how-mcp-works---simple-flow)
-- [Architecture Components](#️-architecture-components)
-- [Transport Layer](#️-transport-layer---how-they-communicate)
-- [Real Example: Development Workflow](#-real-example-development-workflow)
-- [Architecture Diagrams](#-architecture-diagrams)
-- [Complete Code Examples](#-complete-code-examples)
-- [Key Benefits](#-key-benefits)
-- [Connection Efficiency](#-connection-efficiency)
-- [Troubleshooting](#-troubleshooting)
-- [Additional Resources](#-additional-resources)
+
+- [🤔 Why Do We Need MCP Servers?](#why-do-we-need-mcp-servers)
+- [🌟 What is MCP Server?](#what-is-mcp-server)
+- [🔄 How MCP Works - Simple Flow](#how-mcp-works---simple-flow)
+- [🏗️ Architecture Components](#architecture-components)
+- [🛠️ Transport Layer - How They Communicate](#transport-layer---how-they-communicate)
+- [💻 Real Example: Development Workflow](#real-example-development-workflow)
+- [📊 Architecture Diagram](#architecture-diagram)
+- [🔄 Step-by-Step Workflow](#step-by-step-workflow)
+- [🚀 Key Benefits](#key-benefits)
+- [🎯 Major Advantage: Connection Efficiency](#major-advantage-connection-efficiency)
+- [🌍 Popular MCP Servers](#popular-mcp-servers)
+- [🔧 How to Use MCP](#how-to-use-mcp)
+- [❓ Common Questions](#common-questions)
+- [📚 Learn More](#learn-more)
 
 ## 🤔 Why Do We Need MCP Servers?
 
@@ -40,100 +41,6 @@ MCP servers bridge this gap by providing LLMs with **real-world connectivity**. 
 ## 🌟 What is MCP Server?
 
 The **Model Context Protocol (MCP)** is an open-source standard for connecting AI systems with external tools and data sources in a standardized way. Think of it as a **universal port for AI** that transforms static language models into dynamic, action-capable assistants.
-
-## 📋 Prerequisites
-
-Before diving into MCP, you should have:
-
-### Knowledge Requirements
-- Basic understanding of APIs and JSON
-- Familiarity with command-line interfaces
-- Knowledge of client-server architecture
-- Experience with one programming language (Python, JavaScript, etc.)
-
-### Required Tools
-- **Node.js 18+** or **Python 3.8+**
-- **Git** (for examples)
-- **Text editor or IDE** (VS Code, Cursor, etc.)
-- **Terminal/Command Prompt**
-
-### Optional but Helpful
-- Docker (for containerized servers)
-- Basic understanding of JSON-RPC protocol
-- Experience with REST APIs
-
-## 🚀 Getting Started
-
-### Quick Setup Example
-
-1. **Install MCP SDK**:
-   ```bash
-   # For Node.js
-   npm install @modelcontextprotocol/sdk
-   
-   # For Python
-   pip install mcp
-   ```
-
-2. **Create Your First Server** (JavaScript):
-   ```javascript
-   import { Server } from '@modelcontextprotocol/sdk/server/index.js';
-   import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-   
-   const server = new Server({
-     name: 'my-first-server',
-     version: '1.0.0'
-   }, {
-     capabilities: {
-       tools: {}
-     }
-   });
-   
-   // Add a simple tool
-   server.setRequestHandler('tools/list', async () => ({
-     tools: [
-       {
-         name: 'hello_world',
-         description: 'Says hello to the world',
-         inputSchema: {
-           type: 'object',
-           properties: {},
-           required: []
-         }
-       }
-     ]
-   }));
-   
-   server.setRequestHandler('tools/call', async (request) => {
-     if (request.params.name === 'hello_world') {
-       return {
-         content: [
-           {
-             type: 'text',
-             text: 'Hello, World from MCP!'
-           }
-         ]
-       };
-     }
-     throw new Error(`Unknown tool: ${request.params.name}`);
-   });
-   
-   // Start the server
-   const transport = new StdioServerTransport();
-   await server.connect(transport);
-   ```
-
-3. **Connect to AI Client** (Claude Desktop config):
-   ```json
-   {
-     "mcpServers": {
-       "my-first-server": {
-         "command": "node",
-         "args": ["path/to/your/server.js"]
-       }
-     }
-   }
-   ```
 
 ## 🔄 How MCP Works - Simple Flow
 
@@ -178,7 +85,7 @@ flowchart LR
 ### Quick Reference: MCP Concepts
 
 | Term | Definition | Example |
-|------|------------|---------|
+|------|------------|----------|
 | **MCP Host** | AI application | Claude Desktop, Cursor |
 | **MCP Client** | Communication bridge inside host | Built into the AI app |
 | **MCP Server** | Capability provider | File server, Git server |
@@ -196,17 +103,19 @@ flowchart LR
 - **Universal**: Works with any programming language
 - **Simple**: Easy JSON format
 - **Standardized**: Same structure everywhere
-- **Bidirectional**: Both client and server can initiate calls
 
-#### Why JSON-RPC Over Other Protocols?
-
-| Feature | JSON-RPC | REST API | GraphQL |
-|---------|----------|----------|---------|
-| **Bidirectional** | ✅ | ❌ | ❌ |
-| **Request/Response Matching** | ✅ | ❌ | ❌ |
-| **Efficient Binary Transport** | ✅ | ❌ | ❌ |
-| **Simple Protocol** | ✅ | ✅ | ❌ |
-| **Built-in Batching** | ✅ | ❌ | ✅ |
+**Example Message**:
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "write_file",
+  "params": {
+    "path": "/home/user/file.txt",
+    "content": "Hello World"
+  },
+  "id": 1
+}
+```
 
 ### Transport Methods
 
@@ -215,14 +124,12 @@ flowchart LR
 - **How**: Data flows via terminal input/output
 - **When**: Local servers only
 - **Advantage**: Fast, secure, no internet needed
-- **Use Case**: Development tools, local file operations
 
 #### 🌐 HTTP/SSE (Web Protocol)
 - **What**: Communication over internet
-- **How**: Standard web requests with Server-Sent Events
+- **How**: Standard web requests
 - **When**: Remote servers
 - **Advantage**: Connect to servers anywhere
-- **Use Case**: API integrations, cloud services
 
 ## 💻 Real Example: Development Workflow
 
@@ -239,9 +146,7 @@ Each server handles one specific job:
 - **📁 File Server**: `write_file`, `read_file`, `create_directory`
 - **📋 Jira Server**: `create_issue`, `update_issue`, `list_issues`
 
-## 📊 Architecture Diagrams
-
-### Overall System Architecture
+## 📊 Architecture Diagram
 
 ```mermaid
 graph TB
@@ -269,7 +174,7 @@ graph TB
     style JiraServer fill:#fce4ec
 ```
 
-### Step-by-Step Workflow
+## 🔄 Step-by-Step Workflow
 
 ```mermaid
 sequenceDiagram
@@ -305,19 +210,6 @@ sequenceDiagram
     Host->>User: ✅ "All tasks completed!"
 ```
 
-
-### Common Methods Reference
-
-| Method | Purpose | Example Use |
-|--------|---------|-------------|
-| `tools/list` | Get available tools | List all file operations |
-| `tools/call` | Execute a tool | Write file, git commit |
-| `resources/list` | Get available data | List database tables |
-| `resources/read` | Read data | Get file contents |
-| `prompts/list` | Get available prompts | List code templates |
-| `prompts/get` | Get prompt content | Get specific template |
-
-
 ## 🚀 Key Benefits
 
 - **🔌 Universal Connection**: One standard for all AI-tool communication
@@ -325,10 +217,8 @@ sequenceDiagram
 - **📈 Scalable**: Easy to add new capabilities
 - **🔒 Secure**: Controlled access to your data
 - **⚡ Real-time**: Live data and instant actions
-- **🌍 Language Agnostic**: Works with any programming language
-- **🔄 Bidirectional**: Servers can push updates to clients
 
-## 🎯 Connection Efficiency: The Major Advantage
+## 🎯 Major Advantage: Connection Efficiency
 
 ### The Problem: M×N Connections (Without MCP)
 
@@ -370,7 +260,7 @@ graph TB
 With MCP, you only need:
 - **3 AI Apps** + **4 MCP Servers** = **7 total integrations**
 - One standard protocol for everything
-- 42% reduction in integration complexity!
+- 83% reduction in integration complexity!
 
 ```mermaid
 graph TB
@@ -395,23 +285,4 @@ graph TB
     style Server4 fill:#99ccff
 ```
 
-### Efficiency Comparison Table
-
-| Approach | AI Apps | Tools | Total Integrations | Development Effort | Maintenance |
-|----------|---------|-------|-------------------|--------------------|-------------|
-| **Without MCP** | 3 | 4 | 3 × 4 = **12** | Very High | Very High |
-| **With MCP** | 3 | 4 | 3 + 4 = **7** | Low | Low |
-
-
 **Result**: Instead of building 12 custom integrations, you build 7 standardized ones!
-
-## 📚 Additional Resources
-
-### Official Documentation
-- **[MCP Specification](https://spec.modelcontextprotocol.io/)** - Complete technical specification
-- **[Official SDK Documentation](https://modelcontextprotocol.io/docs)** - SDK guides and API reference
-- **[Getting Started Guide](https://modelcontextprotocol.io/quickstart)** - Step-by-step tutorials
-
-
-
-**Ready to build your first MCP server?** Start with our [Getting Started](#-getting-started) section or check out the [official examples](https://github.com/modelcontextprotocol/servers) to see real-world implementations!
