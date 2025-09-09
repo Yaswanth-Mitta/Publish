@@ -2,20 +2,31 @@
 
 ## 📚 Table of Contents
 
-- [🤔 Why Do We Need MCP Servers?](#why-do-we-need-mcp-servers)
-- [🌟 What is MCP Server?](#what-is-mcp-server)
-- [🔄 How MCP Works - Simple Flow](#how-mcp-works---simple-flow)
-- [🏗️ Architecture Components](#architecture-components)
-- [🛠️ Transport Layer - How They Communicate](#transport-layer---how-they-communicate)
-- [💻 Real Example: Development Workflow](#real-example-development-workflow)
-- [📊 Architecture Diagram](#architecture-diagram)
-- [🔄 Step-by-Step Workflow](#step-by-step-workflow)
-- [🚀 Key Benefits](#key-benefits)
-- [🎯 Major Advantage: Connection Efficiency](#major-advantage-connection-efficiency)
-- [🌍 Popular MCP Servers](#popular-mcp-servers)
-- [🔧 How to Use MCP](#how-to-use-mcp)
-- [❓ Common Questions](#common-questions)
-- [📚 Learn More](#learn-more)
+- [Model Context Protocol (MCP) Server](#model-context-protocol-mcp-server)
+  - [📚 Table of Contents](#-table-of-contents)
+  - [🤔 Why Do We Need MCP Servers?](#-why-do-we-need-mcp-servers)
+    - [The LLM Limitation Problem](#the-llm-limitation-problem)
+    - [The Solution: MCP Servers](#the-solution-mcp-servers)
+  - [🌟 What is MCP Server?](#-what-is-mcp-server)
+  - [🔄 How MCP Works - Simple Flow](#-how-mcp-works---simple-flow)
+  - [🏛️ Architecture Components](#️-architecture-components)
+    - [Core Components](#core-components)
+      - [1. **MCP Host** 🖥️](#1-mcp-host-️)
+      - [2. **MCP Client** 🔗](#2-mcp-client-)
+      - [3. **MCP Server** ⚙️](#3-mcp-server-️)
+    - [Quick Reference: MCP Concepts](#quick-reference-mcp-concepts)
+  - [Transport Layer - Data Communication](#transport-layer---data-communication)
+    - [JSON-RPC 2.0 Protocol](#json-rpc-20-protocol)
+    - [Transport Methods](#transport-methods)
+      - [📟 stdio (Standard Input/Output)](#-stdio-standard-inputoutput)
+      - [🌐 HTTP/SSE (Web Protocol)](#-httpsse-web-protocol)
+  - [💻 Real Example: Development Workflow](#-real-example-development-workflow)
+  - [📊 Architecture Diagram](#-architecture-diagram)
+  - [🔄 Step-by-Step Workflow](#-step-by-step-workflow)
+  - [🚀 Key Benefits](#-key-benefits)
+  - [🎯 Major Advantage: Connection Efficiency](#-major-advantage-connection-efficiency)
+    - [The Problem: M×N Connections (Without MCP)](#the-problem-mn-connections-without-mcp)
+    - [The Solution: M+N Connections (With MCP)](#the-solution-mn-connections-with-mcp)
 
 ## 🤔 Why Do We Need MCP Servers?
 
@@ -92,8 +103,7 @@ flowchart LR
 | **Transport** | How components communicate | stdio, HTTP/SSE |
 | **JSON-RPC** | Message format between components | Request/response protocol |
 
-## 🛠️ Transport Layer - How They Communicate
-
+## Transport Layer - Data Communication
 ### JSON-RPC 2.0 Protocol
 
 **JSON-RPC** (JSON Remote Procedure Call) is how MCP components talk to each other.
@@ -103,8 +113,39 @@ flowchart LR
 - **Universal**: Works with any programming language
 - **Simple**: Easy JSON format
 - **Standardized**: Same structure everywhere
+- **Bidirectional**: Both client and server can initiate calls
 
-**Example Message**:
+
+<strong>Why JSON-RPC Over Other Protocols?</strong>
+
+| Feature | JSON-RPC | REST API | GraphQL |
+|---------|----------|----------|---------|
+| **Bidirectional** | ✅ | ❌ | ❌ |
+| **Request/Response Matching** | ✅ | ❌ | ❌ |
+| **Efficient Binary Transport** | ✅ | ❌ | ❌ |
+| **Simple Protocol** | ✅ | ✅ | ❌ |
+| **Built-in Batching** | ✅ | ❌ | ✅ |
+
+
+### Transport Methods
+
+#### 📟 stdio (Standard Input/Output)
+- **What**: Communication through command line
+- **How**: Data flows via terminal input/output
+- **When**: Local servers only
+- **Advantage**: Fast, secure, no internet needed
+- **Use Case**: Development tools, local file operations
+
+#### 🌐 HTTP/SSE (Web Protocol)
+- **What**: Communication over internet
+- **How**: Standard web requests with Server-Sent Events
+- **When**: Remote servers
+- **Advantage**: Connect to servers anywhere
+- **Use Case**: API integrations, cloud services
+
+<details>
+<summary><strong>Example JSON-RPC Message</strong></summary>
+
 ```json
 {
   "jsonrpc": "2.0",
@@ -116,20 +157,8 @@ flowchart LR
   "id": 1
 }
 ```
+</details>
 
-### Transport Methods
-
-#### 📟 stdio (Standard Input/Output)
-- **What**: Communication through command line
-- **How**: Data flows via terminal input/output
-- **When**: Local servers only
-- **Advantage**: Fast, secure, no internet needed
-
-#### 🌐 HTTP/SSE (Web Protocol)
-- **What**: Communication over internet
-- **How**: Standard web requests
-- **When**: Remote servers
-- **Advantage**: Connect to servers anywhere
 
 ## 💻 Real Example: Development Workflow
 
@@ -145,6 +174,8 @@ Each server handles one specific job:
 - **🔧 Git Server**: `git_commit`, `git_push`, `git_status`
 - **📁 File Server**: `write_file`, `read_file`, `create_directory`
 - **📋 Jira Server**: `create_issue`, `update_issue`, `list_issues`
+
+
 
 ## 📊 Architecture Diagram
 
